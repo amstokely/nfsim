@@ -10,6 +10,8 @@ SET(BUILD_DEV ON CACHE BOOL "Build copy of NFsim exe in dev dir for prototyping 
 
 SET(CMAKE_BUILD_TYPE Release)
 
+# Temporary removed option to build for windows platform because I don't have a Windows PC to test this on.
+
 SET(SUB_DIRS
     ${CMAKE_SOURCE_DIR}/src/nauty24
     ${CMAKE_SOURCE_DIR}/src/NFutil
