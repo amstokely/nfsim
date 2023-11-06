@@ -377,7 +377,8 @@ bool runRNFscript(map<string,string> argMap, bool verbose)
 }
 
 
-System *initSystemFromFlags(map<string,string> argMap, bool verbose)
+System *initSystemFromFlags(std::map<std::string,std::string> argMap,
+							bool verbose)
 {
 	//Find the xml file that defines the system
 	if (argMap.find("xml")!=argMap.end())
@@ -609,7 +610,8 @@ System *initSystemFromFlags(map<string,string> argMap, bool verbose)
 }
 
 
-bool runFromArgs(System *s, map<string,string> argMap, bool verbose)
+bool runFromArgs(System *s, std::map<std::string,std::string> argMap,
+				 bool verbose)
 {
 	// default simulation time is 10 seconds outputting
 	// once per second

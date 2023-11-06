@@ -1,69 +1,111 @@
-cmake_minimum_required(VERSION 2.8.9)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.15)
 
-project(NFsim)
+PROJECT(NFsim LANGUAGES CXX C)
 
-#find_package(XMLRPC REQUIRED abyss-server c++2)
+SET(CMAKE_CXX_STANDARD 14)
 
+SET(BUILD_PYTHON ON CACHE BOOL "Build SWIG generated Python bindings")
 
-#if (NOT XMLRPC_FOUND) 
-#  message (FATAL_ERROR "XMLRPC-C not found") 
-#endif (NOT XMLRPC_FOUND) 
+SET(CMAKE_BUILD_TYPE Release)
 
-set(CMAKE_BUILD_TYPE Release)
-
-set(SUB_DIRS
-    src/nauty24 
-    src/NFutil 
-    src/NFutil/MTrand 
-    src/NFtest/transcription 
-    src/NFtest/tlbr 
-    src/NFtest/simple_system 
-    src/NFtest/agentcell/cell 
-    src/NFtest/agentcell 
-    src/NFscheduler 
-    src/NFreactions/transformations 
-    src/NFreactions/reactions 
-    src/NFreactions/reactantLists 
-    src/NFreactions/mappings 
-    src/NFreactions 
-    src/NFoutput 
-    src/NFinput 
-    src/NFinput/TinyXML 
-    src/NFinput/json 
-    src/NFfunction/muParser 
-    src/NFfunction 
-    src/NFcore 
-    src/NFcore/reactionSelector 
-    src/NFcore/moleculeLists 
-)
-add_definitions("-Wno-deprecated-declarations")
+SET(SUB_DIRS
+    ${CMAKE_SOURCE_DIR}/src/nauty24
+    ${CMAKE_SOURCE_DIR}/src/NFutil
+    ${CMAKE_SOURCE_DIR}/src/NFutil/MTrand
+    ${CMAKE_SOURCE_DIR}/src/NFtest/transcription
+    ${CMAKE_SOURCE_DIR}/src/NFtest/tlbr
+    ${CMAKE_SOURCE_DIR}/src/NFtest/simple_system
+    ${CMAKE_SOURCE_DIR}/src/NFtest/agentcell/cell
+    ${CMAKE_SOURCE_DIR}/src/NFtest/agentcell
+    ${CMAKE_SOURCE_DIR}/src/NFscheduler
+    ${CMAKE_SOURCE_DIR}/src/NFreactions/transformations
+    ${CMAKE_SOURCE_DIR}/src/NFreactions/reactions
+    ${CMAKE_SOURCE_DIR}/src/NFreactions/reactantLists
+    ${CMAKE_SOURCE_DIR}/src/NFreactions/mappings
+    ${CMAKE_SOURCE_DIR}/src/NFreactions
+    ${CMAKE_SOURCE_DIR}/src/NFoutput
+    ${CMAKE_SOURCE_DIR}/src/NFinput
+    ${CMAKE_SOURCE_DIR}/src/NFinput/TinyXML
+    ${CMAKE_SOURCE_DIR}/src/NFinput/json
+    ${CMAKE_SOURCE_DIR}/src/NFfunction/muParser
+    ${CMAKE_SOURCE_DIR}/src/NFfunction
+    ${CMAKE_SOURCE_DIR}/src/NFcore
+    ${CMAKE_SOURCE_DIR}/src/NFcore/reactionSelector
+    ${CMAKE_SOURCE_DIR}/src/NFcore/moleculeLists
+    )
+ADD_DEFINITIONS("-Wno-deprecated-declarations")
 
 
-IF(CMAKE_SYSTEM_NAME  MATCHES "Windows")
-   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-#   SET(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
-#   SET(BUILD_SHARED_LIBRARIES OFF)
-#   SET(CMAKE_EXE_LINKER_FLAGS "-static")
-ELSE(CMAKE_SYSTEM_NAME  MATCHES "Windows")
-   set_source_files_properties( src/NFreactions/reactions/DORreaction.cpp PROPERTIES  COMPILE_FLAGS  -std=c++11 )
-   set_source_files_properties( src/NFcore/molecule.cpp                   PROPERTIES  COMPILE_FLAGS  -std=c++11 ) 
-   set_source_files_properties( src/NFcore/templateMolecule.cpp           PROPERTIES  COMPILE_FLAGS  -std=c++11 ) 
-   set_source_files_properties( src/NFinput/NFinput.cpp                   PROPERTIES  COMPILE_FLAGS  -std=c++11 ) 
-ENDIF(CMAKE_SYSTEM_NAME  MATCHES "Windows")
+IF (CMAKE_SYSTEM_NAME MATCHES "Windows")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+ELSE (CMAKE_SYSTEM_NAME MATCHES "Windows")
+    SET_SOURCE_FILES_PROPERTIES(src/NFreactions/reactions/DORreaction.cpp PROPERTIES COMPILE_FLAGS -std=c++11)
+    SET_SOURCE_FILES_PROPERTIES(src/NFcore/molecule.cpp PROPERTIES COMPILE_FLAGS -std=c++11)
+    SET_SOURCE_FILES_PROPERTIES(src/NFcore/templateMolecule.cpp PROPERTIES COMPILE_FLAGS -std=c++11)
+    SET_SOURCE_FILES_PROPERTIES(src/NFinput/NFinput.cpp PROPERTIES COMPILE_FLAGS -std=c++11)
+ENDIF (CMAKE_SYSTEM_NAME MATCHES "Windows")
 
 
-#include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${XMLRPC_INCLUDE_DIRS} ${SUB_DIRS})
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} include ${SUB_DIRS})
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} include ${SUB_DIRS})
 
 
-file(GLOB_RECURSE src_files  "${CMAKE_CURRENT_SOURCE_DIR}/src/*cpp")
-file(GLOB_RECURSE c_src_files  "${CMAKE_CURRENT_SOURCE_DIR}/src/*c")
+FILE(GLOB_RECURSE src_files "${CMAKE_CURRENT_SOURCE_DIR}/src/*cpp")
+FILE(GLOB_RECURSE c_src_files "${CMAKE_CURRENT_SOURCE_DIR}/src/*c")
 
 
-set(SRC_FILES 
-    ${src_files} 
-    ${c_src_files} 
+SET(SRC_FILES
+    ${src_files}
+    ${c_src_files}
+    )
+
+ADD_LIBRARY(
+    NFsimLib SHARED
+    ${SRC_FILES}
 )
 
+ADD_EXECUTABLE(
+    NFsim
+    ${SRC_FILES}
+)
+SET_TARGET_PROPERTIES(
+    NFsim
+    PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/dev
+)
 
-add_executable(${PROJECT_NAME} ${SRC_FILES} )
+IF (${BUILD_PYTHON})
+    FIND_PACKAGE(SWIG REQUIRED)
+    INCLUDE(${SWIG_USE_FILE})
+
+    FIND_PACKAGE(Python3 REQUIRED COMPONENTS Interpreter Development)
+
+    SET(PYNFSIM_LINK_LIBRARIES ${Python3_LIBRARIES} NFsimLib)
+
+    SET(PYNFSIM_INCLUDE_DIRS ${SUB_DIRS} ${CMAKE_SOURCE_DIR}/src ${Python3_INCLUDE_DIRS})
+
+    SET_SOURCE_FILES_PROPERTIES(
+        ${CMAKE_SOURCE_DIR}/swig/pynfsim.i
+        PROPERTIES
+        CPLUSPLUS ON
+        SWIG_MODULE_NAME pynfsim
+        INCLUDE_DIRECTORIES "${PYNFSIM_INCLUDE_DIRS}"
+    )
+    LINK_LIBRARIES("${PYNFSIM_LINK_LIBRARIES}")
+    SWIG_ADD_LIBRARY(
+        pynfsim
+        LANGUAGE python
+        SOURCES ${CMAKE_SOURCE_DIR}/swig/pynfsim.i
+    )
+    ADD_DEPENDENCIES(pynfsim NFsimLib)
+    SET_TARGET_PROPERTIES(
+        pynfsim
+        PROPERTIES
+        LINK_FLAGS "-flat_namespace -undefined suppress"
+        LINK_LIBRARIES "${PYNFSIM_LINK_LIBRARIES}"
+        INCLUDE_DIRECTORIES "${PYNFSIM_INCLUDE_DIRS}"
+    )
+ENDIF (${BUILD_PYTHON})
+
+
+
+
