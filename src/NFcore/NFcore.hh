@@ -4,7 +4,7 @@
 #ifndef NFCORE_HH_
 #define NFCORE_HH_
 
-//Include stl IO and string functionality
+//Include stl IO and std::string functionality
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -14,8 +14,8 @@
 #include <list>
 #include <queue>
 #include <map>
-#include <algorithm>
 #include <set>
+#include <algorithm>
 // Include various NFsim classes from other files
 #include "../NFscheduler/NFstream.h"
 #include "../NFutil/NFutil.hh"
@@ -35,7 +35,6 @@
 // debug nauty?
 #define DEBUG_NAUTY 0
 
-using namespace std;
 
 //!  Contains the primary classes and functions of NFsim
 /*!
@@ -75,7 +74,7 @@ namespace NFcore
 
 	/*****************************************
 	 * Class declarations
-	 *    Here is the list of classes that are defined in this
+	 *    Here is the std::list of classes that are defined in this
 	 *    header file and are used throughout the NFsim program
 	 */
 
@@ -101,15 +100,15 @@ namespace NFcore
 	class ReactionSelector;
 
 
-	//exception for the handling of local functions and mapping sets
+	//exception for the handling of local functions and std::mapping sets
 	class LocalFunctionException: public exception
 	{
 	public:
-		void setType1_Mol(vector <MoleculeType *>* type1_Mol){
+		void setType1_Mol(std::vector <MoleculeType *>* type1_Mol){
 			this->type1_Mol = type1_Mol;
 		}
 
-		vector<MoleculeType*>* getType1_Mol() const{
+		std::vector<MoleculeType*>* getType1_Mol() const{
 			return type1_Mol;
 		}
 
@@ -127,7 +126,7 @@ namespace NFcore
   		}
 
   	private:
-		vector<MoleculeType*>* type1_Mol;
+		std::vector<MoleculeType*>* type1_Mol;
 		int index;
 
 
@@ -166,36 +165,36 @@ namespace NFcore
 			double calculateMeanCount(MoleculeType *m);
 
             // a public iterator:
-			// sets an iternal iterator to the beginning of the vector
+			// sets an iternal iterator to the beginning of the std::vector
 			void resetComplexIter() {  complexIter_public = allComplexes.begin();  };
 
-			// returns the next complex ptr on the vector and increments iterator.  Returns 0 if at the end of the vector.
+			// returns the next complex ptr on the std::vector and increments iterator.  Returns 0 if at the end of the std::vector.
 			Complex * nextComplex() {  return (complexIter_public < allComplexes.end() ? *complexIter_public++ : 0);  };
 
 
 		protected:
-			vector <Complex * > allComplexes;         /*!< container of all complexes in the simulation */
-			queue <int> nextAvailableComplex;         /*!< queue tells us which complexes can be used next */
+			std::vector <Complex * > allComplexes;         /*!< container of all complexes in the simulation */
+			std::queue <int> nextAvailableComplex;         /*!< std::queue tells us which complexes can be used next */
 
 			System * sys;                             /* pointer to the system which this ComplexList belongs to */
 			bool useComplex;                          /* true if the system is tracking complexes */
 
 		private:
-			vector <Complex *>::iterator  complexIter;         /* to iterate over allComplexes */
-			vector <Complex *>::iterator  complexIter_public;  /* to iterator over allComplexes, associated with public iterator */
+			std::vector <Complex *>::iterator  complexIter;         /* to iterate over allComplexes */
+			std::vector <Complex *>::iterator  complexIter_public;  /* to iterator over allComplexes, associated with public iterator */
 	};
 
 
 
 	//!  The main class that begins and runs simulations
 	/*!
-	   This class is what runs the actual simulation.  It keeps lists of
+	   This class is what runs the actual simulation.  It keeps std::lists of
 	   all MoleculeTypes that exist and all Reactions that can operate
 	   on those moleculeTypes.  It also contains the function (named sim)
 	   which runs the main simulation loop.  To create a new System,
 	   first add all MoleculeTypes, all reactions, then call the function
 	   prepareForSimulation().  Then call the sim function as many times
-	   as you like.  Output is printed to the given output file and lists
+	   as you like.  Output is printed to the given output file and std::lists
 	   all observables per time according to how often you want values
 	   recorded.
 	   @author Michael Sneddon
@@ -214,19 +213,19 @@ namespace NFcore
 				 creates a system with the given name that does not
 				 keep track dynamically of complex formation
 			 */
-			System(string name);
+			System(std::string name);
 
 			/*!
 				 creates a system that keeps track of complex formation if
 				 the setComplex parameter is set to true
 			 */
-			System(string name, bool useComplex);
+			System(std::string name, bool useComplex);
 
 			/*!
 				creates a system that keeps track of complex formation if
 				the setComplex parameter is set to true
 			*/
-			System(string name, bool useComplex, int globalMoleculeLimit);
+			System(std::string name, bool useComplex, int globalMoleculeLimit);
 
 			/*!
 				 destroys the system and cleans up all memory associated with it
@@ -234,22 +233,22 @@ namespace NFcore
 			~System();
 
 			// Basic functions to get the properties and objects of the system
-			string getName() const { return name; };
+			std::string getName() const { return name; };
 			bool isUsingComplex() { return useComplex; };   // NETGEN -- is this needed?
 			bool isOutputtingBinary() { return useBinaryOutput; };
 			double getCurrentTime() const { return current_time; };
 			int getGlobalMoleculeLimit() const { return globalMoleculeLimit; };
 
 			int getMolObsCount(int moleculeTypeIndex, int observableIndex) const;
-			Observable * getObservableByName(string obsName);
-			double getAverageGroupValue(string groupName, int valIndex);
+			Observable * getObservableByName(std::string obsName);
+			double getAverageGroupValue(std::string groupName, int valIndex);
 
 			ReactionClass *getReaction(int rIndex) { return allReactions.at(rIndex); };
-			vector <ReactionClass *> getAllReactions () { return allReactions; };
-			ReactionClass * getReactionByName(string name);
+			std::vector <ReactionClass *> getAllReactions () { return allReactions; };
+			ReactionClass * getReactionByName(std::string name);
 
 			MoleculeType * getMoleculeType(int mtIndex) { return allMoleculeTypes.at(mtIndex); };
-			MoleculeType * getMoleculeTypeByName(string name);
+			MoleculeType * getMoleculeTypeByName(std::string name);
 			int getNumOfMoleculeTypes() { return allMoleculeTypes.size(); };
 			Molecule * getMoleculeByUid(int uid);
 			// AS2023 - this is added to allow for the suppression of warnings if the
@@ -268,22 +267,22 @@ namespace NFcore
 			//int createComplex(Molecule * m);
 
 			bool addGlobalFunction(GlobalFunction *gf);
-			GlobalFunction * getGlobalFunctionByName(string fName);
+			GlobalFunction * getGlobalFunctionByName(std::string fName);
 			bool addCompositeFunction(CompositeFunction *cf);
-			CompositeFunction * getCompositeFunctionByName(string fName);
+			CompositeFunction * getCompositeFunctionByName(std::string fName);
 			void finalizeCompositeFunctions();
 
 			void printAllFunctions();
 
-			bool saveSpecies() { return saveSpecies(string(name+"_nf.species")); };
-			bool saveSpecies(string filename);
+			bool saveSpecies() { return saveSpecies(std::string(name+"_nf.species")); };
+			bool saveSpecies(std::string filename);
 
 			// AS2023 - this gets set up by rxnlog argument and enables the logging
 			// of each firing in the system 
 			bool getReactionTrackingStatus() { return reactionTrackingEnabled; };
 			void setReactionTrackingStatus(bool status) { reactionTrackingEnabled = status; };
 
-			LocalFunction * getLocalFunctionByName(string fName);
+			LocalFunction * getLocalFunctionByName(std::string fName);
 			//bool addFunctionReference(FunctionReference *fr);
 
 			/* once all elements are added, we need to prepare and initialize for simulations */
@@ -298,17 +297,17 @@ namespace NFcore
 
 			/* tell the system where to ouptut results*/
 			void setOutputToBinary();
-			void registerOutputFileLocation(string filename);
+			void registerOutputFileLocation(std::string filename);
 			/* reaction firings are output to this file
 			 * if any reaction has tag flag set to 1 */
-			void registerReactionFileLocation(string filename);
+			void registerReactionFileLocation(std::string filename);
 			/* Connected reactions upon each reaction firing are written to this location */
-			void registerConnectedRxnFileLocation(string filename);
+			void registerConnectedRxnFileLocation(std::string filename);
 			/* Connected reactions for each reaction as calculated are written to this location */
-			void registerListOfConnectedRxnFileLocation(string filename);
-			/* list of molecule types and reaction firing counts are stored in these files */
-			void registerMoleculeTypeFileLocation(string filename);
-			void registerRxnListFileLocation(string filename);
+			void registerListOfConnectedRxnFileLocation(std::string filename);
+			/* std::list of molecule types and reaction firing counts are stored in these files */
+			void registerMoleculeTypeFileLocation(std::string filename);
+			void registerRxnListFileLocation(std::string filename);
 
 
 			void setDumpOutputter(DumpSystem *ds);
@@ -323,7 +322,7 @@ namespace NFcore
 
 
 			void addLocalFunction(LocalFunction *lf);
-			void getLocalFunction(string funcName) const { cout<<"getLocalFunction not yet implemented."<<endl;exit(1);};
+			void getLocalFunction(std::string funcName) const { cout<<"getLocalFunction not yet implemented."<<endl;exit(1);};
 
 
 			/* functions to output simulation properties to the registered file*/
@@ -395,7 +394,7 @@ namespace NFcore
 
 
 			//For moleculeTypes to do a quick lookup and see where a particular reaction
-			//is mapped to.  This is an optimization....
+			//is std::mapped to.  This is an optimization....
 			void registerRxnIndex(int rxnId, int rxnPos, int rxnIndex) {rxnIndexMap[rxnId][rxnPos]=rxnIndex;};
 			int getRxnIndex(int rxnId, int rxnPos) const { return rxnIndexMap[rxnId][rxnPos]; };
 
@@ -403,9 +402,9 @@ namespace NFcore
 			void turnOnOutputEventCounter() { outputEventCounter=true; };
 			int getGlobalEventCounter() { return globalEventCounter; };
 
-			void addParameter(string name,double value);
-			double getParameter(string name);
-			void setParameter(string name, double value);
+			void addParameter(std::string name,double value);
+			double getParameter(std::string name);
+			void setParameter(std::string name, double value);
 			void updateSystemWithNewParameters();
 			void printAllParameters();
 
@@ -451,7 +450,7 @@ namespace NFcore
 
 			/*
 			 * Write reaction and molecule numbers instead of names to reduce file size
-			 * This flag will also output two tsv files of list of molecules and reactions.
+			 * This flag will also output two tsv files of std::list of molecules and reactions.
 			 * Arvind Rasi Subramaniam Feb 18, 2019
 			 */
 			void setRxnNumberTrack(bool value) { this->trackRxnNumber = value; };
@@ -492,20 +491,20 @@ namespace NFcore
 			void setLogBufferSize(int bsize) { this->log_buffer_size = bsize; };
 
 			// AS2023 - Species log helper functions
-			void setSpeciesLog(string logstr) { this->speciesLog = logstr; };
-			string getSpeciesLog() { return this->speciesLog; };
+			void setSpeciesLog(std::string logstr) { this->speciesLog = logstr; };
+			std::string getSpeciesLog() { return this->speciesLog; };
 			
 		protected:
 
 			///////////////////////////////////////////////////////////////////////////
 			// The invariant system properties, created when the system is created and before
 			// the system is prepared
-			string name;         /*!< arbitrary name of the system  */
+			std::string name;         /*!< arbitrary name of the system  */
 			// NETGEN -- is this needed?
 			bool useComplex;     /*!< sets whether or not to dynamically track complexes */
 			bool useBinaryOutput; /*!< set to true to turn on binary output of data */
 			bool evaluateComplexScopedLocalFunctions; /*!< set to true to turn on enable complex-scoped local functions */
-			int universalTraversalLimit; /*!< sets depth to traverse molecules when updating reactant lists */
+			int universalTraversalLimit; /*!< sets depth to traverse molecules when updating reactant std::lists */
 			bool onTheFlyObservables;    /*!< sets whether or not observables are calculated on the fly */
 		    bool outputGlobalFunctionValues; /*< set to true to output the value of all global functions at each output step */
 		    int globalMoleculeLimit; /*< total number of any particular molecule that can be created, default=100,000 */
@@ -522,37 +521,37 @@ namespace NFcore
 
 		    int globalEventCounter;
 
-			string speciesLog; /* AS2023 - log string for initial species */
+			std::string speciesLog; /* AS2023 - log std::string for initial species */
 
 		    ///////////////////////////////////////////////////////////////////////////
 			// The container objects that maintain the core system configuration
-			vector <MoleculeType *> allMoleculeTypes;  /*!< container of all MoleculeTypes in the simulation */
-			vector <ReactionClass *> allReactions;    /*!< container of all Reactions in the simulation */
+			std::vector <MoleculeType *> allMoleculeTypes;  /*!< container of all MoleculeTypes in the simulation */
+			std::vector <ReactionClass *> allReactions;    /*!< container of all Reactions in the simulation */
 			/* created by rasi to see if the reaction connectivity can be inferred at the beginning
 			 * to avoid the time-intensive search during each simulation run.
 			 */
-			vector <TemplateMolecule *> allTemplateMolecules;    /*!< container of all Reactions in the simulation */
+			std::vector <TemplateMolecule *> allTemplateMolecules;    /*!< container of all Reactions in the simulation */
             // NETGEN
-			//vector <Complex * > allComplexes;         /*!< container of all complexes in the simulation */
-			//queue <int> nextAvailableComplex;         /*!< queue tells us which complexes can be used next */
-			vector <Outputter *> allOutputters;    /*!< manages the outputters of the system */
+			//std::vector <Complex * > allComplexes;         /*!< container of all complexes in the simulation */
+			//std::queue <int> nextAvailableComplex;         /*!< std::queue tells us which complexes can be used next */
+			std::vector <Outputter *> allOutputters;    /*!< manages the outputters of the system */
 
 			ComplexList  allComplexes;                /*!< a container to track all complexes in the system */
 
-			vector <Observable *> obsToOutput; /*!< keeps ordered list of pointers to observables for output */
-			vector <Observable *> speciesObservables;
+			std::vector <Observable *> obsToOutput; /*!< keeps ordered std::list of pointers to observables for output */
+			std::vector <Observable *> speciesObservables;
 
 			DumpSystem *ds;
 
 
 			///////////////////////////////////////////////////////////////////////////
 			// The container objects that maintain the functional expressions
-			//vector <FunctionReference *> functionReferences;
-			vector <GlobalFunction *> globalFunctions;    /*!< container of all global functions available to the system */
-			vector <LocalFunction *> localFunctions;      /*!< container of all local functions available to the system */
-			vector <ReactionClass *> necessaryUpdateRxns; /*!< list of all  reactions that need to update propensity after each step*/
+			//std::vector <FunctionReference *> functionReferences;
+			std::vector <GlobalFunction *> globalFunctions;    /*!< container of all global functions available to the system */
+			std::vector <LocalFunction *> localFunctions;      /*!< container of all local functions available to the system */
+			std::vector <ReactionClass *> necessaryUpdateRxns; /*!< std::list of all  reactions that need to update propensity after each step*/
 
-			vector <CompositeFunction *> compositeFunctions;
+			std::vector <CompositeFunction *> compositeFunctions;
 
 
 			///////////////////////////////////////////////////////////////////////////
@@ -574,17 +573,17 @@ namespace NFcore
 			///////////////////////////////////////////////////////////////////////////
 			// Neccessary variables and methods for outputting
 			//ofstream outputFileStream; /* the stream to a file to write out the results */
-			NFstream outputFileStream; /* NFstream is a smart stream that uses ofstream or stringstream depending on whether NF_MPI is defined */
-			NFstream reactionOutputFileStream; /* NFstream is a smart stream that uses ofstream or stringstream depending on whether NF_MPI is defined */
-			NFstream connectedRxnFileStream; /* NFstream is a smart stream that uses ofstream or stringstream depending on whether NF_MPI is defined */
-			NFstream connectedRxnListFileStream; /* NFstream is a smart stream that uses ofstream or stringstream depending on whether NF_MPI is defined */
+			NFstream outputFileStream; /* NFstream is a smart stream that uses ofstream or std::stringstream depending on whether NF_MPI is defined */
+			NFstream reactionOutputFileStream; /* NFstream is a smart stream that uses ofstream or std::stringstream depending on whether NF_MPI is defined */
+			NFstream connectedRxnFileStream; /* NFstream is a smart stream that uses ofstream or std::stringstream depending on whether NF_MPI is defined */
+			NFstream connectedRxnListFileStream; /* NFstream is a smart stream that uses ofstream or std::stringstream depending on whether NF_MPI is defined */
 			NFstream moleculeTypeFileStream;
 			NFstream rxnListFileStream;
 			void outputGroupDataHeader();
 
 
 			void outputAllPropensities(double time, int rxnFired);
-			ofstream propensityDumpStream;
+			std::ofstream propensityDumpStream;
 
 			bool csvFormat;
 
@@ -594,7 +593,7 @@ namespace NFcore
 			int **rxnIndexMap;
 
 
-			map <string,double> paramMap;
+			std::map <std::string,double> paramMap;
 
 
 
@@ -602,24 +601,24 @@ namespace NFcore
 			ReactionSelector * selector;
 
 			// To look up connected reactions quickly
-			vector <vector <bool> > connectedReactions;
+			std::vector <std::vector <bool> > connectedReactions;
 
 			// AS2023 - sets the default log buffer size to 10000 firings.
 			int log_buffer_size = 10000;
 
 		private:
-			list <Molecule *> molList;
-			list <Molecule *>::iterator molListIter;
+			std::list <Molecule *> molList;
+			std::list <Molecule *>::iterator molListIter;
 
 			///////////////////////////////////////////////////////////////////////////
 			//Iterators that allow fast traversal of the object containers
 
-			vector<Observable *>::iterator obsIter;
-			vector<MoleculeType *>::iterator molTypeIter;  /* to iterate over allMoleculeType */
-			vector <ReactionClass *>::iterator rxnIter;    /* to iterate over allReactions */
+			std::vector<Observable *>::iterator obsIter;
+			std::vector<MoleculeType *>::iterator molTypeIter;  /* to iterate over allMoleculeType */
+			std::vector <ReactionClass *>::iterator rxnIter;    /* to iterate over allReactions */
 			// NETGEN -- moved to ComplexList class
-			//vector <Complex *>::iterator complexIter;      /* to iterate over allComplexes */
-			vector <GlobalFunction *>::iterator functionIter; /* to iterate over Global Functions */
+			//std::vector <Complex *>::iterator complexIter;      /* to iterate over allComplexes */
+			std::vector <GlobalFunction *>::iterator functionIter; /* to iterate over Global Functions */
 	};
 
 
@@ -628,7 +627,7 @@ namespace NFcore
 	/*!
       This class maintains information about a "type" of molecule in the System.
 	  It keeps track of all reactions that this "type" of molecule can possibly
-	  be a part of and a list of the default binding sites and states.  It also
+	  be a part of and a std::list of the default binding sites and states.  It also
 	  keeps track and updates all Observables that pertain to this MoleculeType.
 	  And perhaps most importantly, it keeps track of all Molecules that exist in
 	  the simulation of this molecule "type."  It has functions which allow it
@@ -641,57 +640,57 @@ namespace NFcore
 		public:
 
 			MoleculeType(
-					string name,
-					vector <string> &compName,
+					std::string name,
+					std::vector <std::string> &compName,
 					System *s);
 
 			MoleculeType(
-					string name,
-					vector <string> &compName,
-					vector <string> &defaultCompState,
+					std::string name,
+					std::vector <std::string> &compName,
+					std::vector <std::string> &defaultCompState,
 					System *s);
 
 			MoleculeType(
-					string name,
-					vector <string> &compName,
-					vector <string> &defaultCompState,
-					vector < vector<string> > &possibleCompStates,
+					std::string name,
+					std::vector <std::string> &compName,
+					std::vector <std::string> &defaultCompState,
+					std::vector < std::vector<std::string> > &possibleCompStates,
 					System *system);
 
 			MoleculeType(
-					string name,
-					vector <string> &compName,
-					vector <string> &defaultCompState,
-					vector < vector<string> > &possibleCompStates,
-					vector <bool> isIntegerComponent,
+					std::string name,
+					std::vector <std::string> &compName,
+					std::vector <std::string> &defaultCompState,
+					std::vector < std::vector<std::string> > &possibleCompStates,
+					std::vector <bool> isIntegerComponent,
 					System *system);
 
 			MoleculeType(
-					string name,
-					vector <string> &compName,
-					vector <string> &defaultCompState,
-					vector < vector<string> > &possibleCompStates,
-					vector <bool> isIntegerComponent,
+					std::string name,
+					std::vector <std::string> &compName,
+					std::vector <std::string> &defaultCompState,
+					std::vector < std::vector<std::string> > &possibleCompStates,
+					std::vector <bool> isIntegerComponent,
 					bool pop_type,
 					System *system);
 
 			~MoleculeType();
 
-			string getName() const { return name; };
+			std::string getName() const { return name; };
 			int getTypeID() const { return type_id; };
 			System * getSystem() const { return system; };
 
 			//Function to access component information
 			int getNumOfComponents() const { return numOfComponents; };
-			string getComponentName(int cIndex) const;
-			void getPossibleComponentStates(int cIndex, list <string> &nameList);
+			std::string getComponentName(int cIndex) const;
+			void getPossibleComponentStates(int cIndex, std::list <std::string> &nameList);
 			int getDefaultComponentState(int cIndex) const { return defaultCompState[cIndex]; };
-			// AS2023 - we need the comp states in a vector
-			vector < vector < string > > getPossibleCompStates() {return possibleCompStates;};
+			// AS2023 - we need the comp states in a std::vector
+			std::vector < std::vector < std::string > > getPossibleCompStates() {return possibleCompStates;};
 
-			int getCompIndexFromName(string cName) const;
-			string getComponentStateName(int cIndex, int cValue);
-			int getStateValueFromName(int cIndex, string stateName) const;
+			int getCompIndexFromName(std::string cName) const;
+			std::string getComponentStateName(int cIndex, int cValue);
+			int getStateValueFromName(int cIndex, std::string stateName) const;
 
 
 
@@ -704,19 +703,19 @@ namespace NFcore
 			//
 			//
 			int getNumOfEquivalencyClasses() const { return this->n_eqComp; };
-			// returns a string array with length numberOfEquivalencyClasses giving the generic component names
-			string *getEquivalencyClassCompNames() const { return this->eqCompOriginalName; };
-			void addEquivalentComponents(vector <vector <string> > &identicalComponents);
-			bool isEquivalentComponent(string cName) const;
+			// returns a std::string array with length numberOfEquivalencyClasses giving the generic component names
+			std::string *getEquivalencyClassCompNames() const { return this->eqCompOriginalName; };
+			void addEquivalentComponents(std::vector <std::vector <std::string> > &identicalComponents);
+			bool isEquivalentComponent(std::string cName) const;
 			bool isEquivalentComponent(int cIndex) const;
-			void getEquivalencyClass(int *&components, int &n_components, string cName) const;
+			void getEquivalencyClass(int *&components, int &n_components, std::string cName) const;
 
 			// given a generic component name or specific component index, return the equivalence class number
-			int getEquivalencyClassNumber(string cName) const;
+			int getEquivalencyClassNumber(std::string cName) const;
 			int getEquivalenceClassNumber(int cIndex) const;
 
 			// given a component index, return the generic component name
-			string getEquivalenceClassComponentNameFromComponentIndex(int cIndex) const;
+			std::string getEquivalenceClassComponentNameFromComponentIndex(int cIndex) const;
 
 
 
@@ -725,12 +724,12 @@ namespace NFcore
 			// query or set population type
 			bool isPopulationType() const { return population_type; };
 
-			bool isIntegerComponent(string cName) const;
+			bool isIntegerComponent(std::string cName) const;
 			bool isIntegerComponent(int cIndex) const;
 
 			//functions that handle the observables
 			int getNumOfMolObs() const { return (int)molObs.size(); };
-			string getMolObsName(int obsIndex) const;
+			std::string getMolObsName(int obsIndex) const;
 			MoleculesObservable * getMolObs(int obsIndex) const { return molObs.at(obsIndex); };
 			int getMolObsCount(int obsIndex) const;
 			void removeFromObservables(Molecule * m);
@@ -795,7 +794,7 @@ namespace NFcore
 			/* this method assumes all molecules in the simulation
 			 * have been defined, and all reaction classes and observables
 			 * have been added.  Then, this function will add those
-			 * molecules to rxn lists and instantiate the counts of the observables.
+			 * molecules to rxn std::lists and instantiate the counts of the observables.
 			 * In general, you do not need to worry about this function because
 			 * it automatically gets called by the System when you prepare the System*/
 			void prepareForSimulation();
@@ -811,7 +810,7 @@ namespace NFcore
 			/* Type I local functions are functions that this molecule type needs to have
 			 * always updated because it can react in a DOR reaction which needs the specified
 			 * function.  DOR reactions identify these MoleculeTypes and add their function to
-			 * the list of Type I functions for this MoleculeType.
+			 * the std::list of Type I functions for this MoleculeType.
 			 *
 			 * Type II local functions are those that require this MoleculeType as an observable
 			 * or counter to be evaluated.  When this molecule gets updated, it has to automatically
@@ -823,8 +822,8 @@ namespace NFcore
 			 */
 			int addLocalFunc_TypeI(LocalFunction *lf);
 			int addLocalFunc_TypeII(LocalFunction *lf);
-			vector <LocalFunction *> locFuncs_typeI;
-			vector <LocalFunction *> locFuncs_typeII;
+			std::vector <LocalFunction *> locFuncs_typeI;
+			std::vector <LocalFunction *> locFuncs_typeII;
 
 			int getNumOfTypeIFunctions() const {return locFuncs_typeI.size(); };
 			LocalFunction *getTypeILocalFunction(int index) { return locFuncs_typeI.at(index); };
@@ -841,23 +840,23 @@ namespace NFcore
 		protected:
 
 			void init(
-				string name,
-				vector <string> &compName,
-				vector <string> &defaultCompState,
-				vector < vector<string> > &possibleCompStates,
-				vector <bool> isIntegerComponent,
+				std::string name,
+				std::vector <std::string> &compName,
+				std::vector <std::string> &defaultCompState,
+				std::vector < std::vector<std::string> > &possibleCompStates,
+				std::vector <bool> isIntegerComponent,
 				System *system);
 
 
 			//basic info
 			System *system;
-			string name;
+			std::string name;
 			int type_id;
 
 			//keeps track of the key information about a MoleculeType - the component
 			int numOfComponents;
-			string *compName;
-			vector < vector < string > > possibleCompStates;
+			std::string *compName;
+			std::vector < std::vector < std::string > > possibleCompStates;
 			int *defaultCompState;
 			bool *isIntegerCompState;
 			const bool population_type;
@@ -865,24 +864,24 @@ namespace NFcore
 
 			//set of variables to keep track of equivalent (aka symmetric) components
 			int n_eqComp;
-			string *eqCompOriginalName;
+			std::string *eqCompOriginalName;
 			int * eqCompSizes;
-			string **eqCompName;
+			std::string **eqCompName;
 			int **eqCompIndex;
 
 
-			//Lists and vectors of everything we need to know
+			//Lists and std::vectors of everything we need to know
 			MoleculeList * mList;
 
-			vector <ReactionClass *> reactions; /* List of reactions that this type can be involved with */
-			vector <int> reactionPositions;   /* the position in the reaction for this type of molecule */
+			std::vector <ReactionClass *> reactions; /* List of reactions that this type can be involved with */
+			std::vector <int> reactionPositions;   /* the position in the reaction for this type of molecule */
 
-			vector <int> indexOfDORrxns;
+			std::vector <int> indexOfDORrxns;
 
 
-			vector <MoleculesObservable *> molObs;  /* list of things to keep track of */
+			std::vector <MoleculesObservable *> molObs;  /* std::list of things to keep track of */
 
-			vector <TemplateMolecule *> allTemplates; /* keep track of all templates that exist of this type
+			std::vector <TemplateMolecule *> allTemplates; /* keep track of all templates that exist of this type
 															so that they are easy to delete from memory at the end */
 
 			ReactionClass *rxn; /*used so we don't need to redeclare this at every call to updateRxnMembership */
@@ -891,9 +890,9 @@ namespace NFcore
 
 		private:
 			//Some iterators so we don't have to instantiate a new iterator every time
-			vector<Molecule *>::iterator molIter;  /* to iterate over mInstances */
-			vector<MoleculesObservable *>::iterator molObsIter; /* to iterate over observables */
-			vector <ReactionClass *>::iterator rxnIter; /* to iterate over reactions */
+			std::vector<Molecule *>::iterator molIter;  /* to iterate over mInstances */
+			std::vector<MoleculesObservable *>::iterator molObsIter; /* to iterate over observables */
+			std::vector <ReactionClass *>::iterator rxnIter; /* to iterate over reactions */
 	};
 
 
@@ -918,7 +917,7 @@ namespace NFcore
 
 			/* basic get functions for name, type, complex, and IDs*/
 			int getMolListId() const { return listId; };
-			string getMoleculeTypeName() const { return parentMoleculeType->getName(); };
+			std::string getMoleculeTypeName() const { return parentMoleculeType->getName(); };
 			MoleculeType * getMoleculeType() const { return parentMoleculeType; };
 			int getUniqueID() const { return ID_unique; };
 			bool isAlive() const { return isAliveInSim; };
@@ -931,7 +930,7 @@ namespace NFcore
 			int getDegree();
 
 			// get (non-unqiue) label for this molecule (cIndex==-1) or one of it's components (cIndex>=0)
-			string getLabel(int cIndex) const;
+			std::string getLabel(int cIndex) const;
 
 			////////////////////////////////////////////////////////////////////////
 			bool isPopulationType() const { return parentMoleculeType->isPopulationType(); } ;
@@ -955,7 +954,7 @@ namespace NFcore
 			int getComponentState(int cIndex) const { return component[cIndex]; };
 			int getComponentIndexOfBond(int cIndex) const { return indexOfBond[cIndex]; };
 			void setComponentState(int cIndex, int newValue);
-			void setComponentState(string cName, int newValue);
+			void setComponentState(std::string cName, int newValue);
 
 			///////////// local function methods...
 			void setLocalFunctionValue(double newValue,int localFunctionIndex);
@@ -974,10 +973,10 @@ namespace NFcore
 
 			int getRxnListMappingId(int rxnIndex) { 
 				//return rxnListMappingId[rxnIndex];
-				return (rxnListMappingId2[rxnIndex].size() > 0) ? *rxnListMappingId2[rxnIndex].begin() : -1;  //JJT: changing to handle multiple mappings per reaction
+				return (rxnListMappingId2[rxnIndex].size() > 0) ? *rxnListMappingId2[rxnIndex].begin() : -1;  //JJT: changing to handle multiple std::mappings per reaction
 			};
 
-			set<int> getRxnListMappingSet(int rxnIndex){
+			std::set<int> getRxnListMappingSet(int rxnIndex){
 
 				return rxnListMappingId2[rxnIndex];
 			}
@@ -989,7 +988,7 @@ namespace NFcore
 						return true;
 					}
 					else{
-						pair<std::set<int>::iterator,bool> it = this->rxnListMappingId2[rxnIndex].insert(rxnListMappingId); //JJT: using a set* instead of int* to deal with multiple mappings per reaction
+						std::pair<std::set<int>::iterator,bool> it = this->rxnListMappingId2[rxnIndex].insert(rxnListMappingId); //JJT: using a set* instead of int* to deal with multiple std::mappings per reaction
 						return it.second; //JJT:  return whether it is a new insert or not
 					}
 			};
@@ -1009,25 +1008,25 @@ namespace NFcore
 
 			/* static functions which bind and unbind two molecules */
 			static void bind(Molecule *m1, int cIndex1, Molecule *m2, int cIndex2);
-			static void bind(Molecule *m1, string compName1, Molecule *m2, string compName2);
+			static void bind(Molecule *m1, std::string compName1, Molecule *m2, std::string compName2);
 			// AS2023 - unbind now returns the indices of the molecule that's selected
 			// for the unbinding for recording/logging purposesz
-			static vector<int> unbind(Molecule *m1, int bSiteIndex);
-			static vector<int> unbind(Molecule *m1, char * bSiteName);
+			static std::vector<int> unbind(Molecule *m1, int bSiteIndex);
+			static std::vector<int> unbind(Molecule *m1, char * bSiteName);
 
 
 			/* functions needed to traverse a complex and get all components
 			 * which is important when we want to update reactions and complexes */
-			void traverseBondedNeighborhood(list <Molecule *> &members, int traversalLimit);
+			void traverseBondedNeighborhood(std::list <Molecule *> &members, int traversalLimit);
 			// AS2023 - additional call sig to use with reaction firing logging
-			void traverseBondedNeighborhood(list <Molecule *> &members, int traversalLimit, string &logstr);
-			static void breadthFirstSearch(list <Molecule *> &members, Molecule *m, int depth);
+			void traverseBondedNeighborhood(std::list <Molecule *> &members, int traversalLimit, std::string &logstr);
+			static void breadthFirstSearch(std::list <Molecule *> &members, Molecule *m, int depth);
 			// AS2023 - additional call sig to use with reaction firing logging
-			static void breadthFirstSearch(list <Molecule *> &members, Molecule *m, int depth, string &logstr);
-			void depthFirstSearch(list <Molecule *> &members);
+			static void breadthFirstSearch(std::list <Molecule *> &members, Molecule *m, int depth, std::string &logstr);
+			void depthFirstSearch(std::list <Molecule *> &members);
 
 			/* when we are ready to begin simulations, moleculeType calls this function
-			 * so that this molecule can add itself to all the necessary lists */
+			 * so that this molecule can add itself to all the necessary std::lists */
 			void prepareForSimulation();
 
 			/* function that tells this molecule that it changed states or bonds
@@ -1037,7 +1036,7 @@ namespace NFcore
 			void addToObservables();
 			//void updateDORs();
 
-			//double getDORvalueFromGroup(string groupName, int valueIndex);
+			//double getDORvalueFromGroup(std::string groupName, int valueIndex);
 
 
 
@@ -1049,7 +1048,7 @@ namespace NFcore
 			// update local functions that may depend on this molecule,
 			// i.e. this molecule's type appears in an observable that some local fcn references.
 			// (this version updates lfcns on all product complexes) --Justin
-			void updateTypeIIFunctions( vector <Complex *> & productComplexes );
+			void updateTypeIIFunctions( std::vector <Complex *> & productComplexes );
 			// update DOR reaction propensity that depends on this molecule (type I),
 			// i.e. this molecule is an argument passed to a local function.
 			void updateDORRxnValues();
@@ -1058,13 +1057,13 @@ namespace NFcore
 
 			/* print functions for debugging */
 			void printDetails();
-			void printDetails(ostream &o);
+			void printDetails(std::ostream &o);
 
 			/* print bond details for debugging and tracking state changes */
 			void printBondDetails();
 			void printBondDetails(NFstream &o);
-			void printBondDetails(ostream &o);
-			static void printMoleculeList(list <Molecule *> &members);
+			void printBondDetails(std::ostream &o);
+			static void printMoleculeList(std::list <Molecule *> &members);
 
 			static int getUniqueIdCount() { return uniqueIdCount; };
 			static const int NOT_IN_RXN = -1;
@@ -1110,7 +1109,7 @@ namespace NFcore
 
 
 			///////////////////////////////////////////////////////////////////
-			/* list of components */
+			/* std::list of components */
 			int *component;
 			int numOfComponents;
 			Molecule **bond;
@@ -1126,23 +1125,23 @@ namespace NFcore
 
 
 			//Used to keep track of which reactions this molecule is in...
-			set<int>* rxnListMappingId2;
-			map<vector<Molecule *>, int>* rxnListMappingId3;
+			std::set<int>* rxnListMappingId2;
+			std::map<std::vector<Molecule *>, int>* rxnListMappingId3;
 			int nReactions;
 
 
-			// dependent update molecule list, so that when this molecule updates,
-			// it necessarily updates whatever is on this list.  This list will capture non
+			// dependent update molecule std::list, so that when this molecule updates,
+			// it necessarily updates whatever is on this std::list.  This std::list will capture non
 			// local interactions that need to be maintained that result from the connected-to syntax
-			// list <Molecule *> dependentUpdateMolecules
-			//list <Molecule *> dependentUpdateMolecules;
+			// std::list <Molecule *> dependentUpdateMolecules
+			//std::list <Molecule *> dependentUpdateMolecules;
 
 
 		private:
 
-			static queue <Molecule *> q;
-			static queue <int> d;
-			static list <Molecule *>::iterator molIter;
+			static std::queue <Molecule *> q;
+			static std::queue <int> d;
+			static std::list <Molecule *>::iterator molIter;
 
 	};
 
@@ -1192,23 +1191,23 @@ namespace NFcore
 
 
 
-			ReactionClass(string name, double rate, string baseRateParameterName, TransformationSet *transformationSet, System *s);
+			ReactionClass(std::string name, double rate, std::string baseRateParameterName, TransformationSet *transformationSet, System *s);
 			virtual ~ReactionClass();
 
 			//! To get all reactant and product templates for inferring connectivity between reactions
 			//! @author Arvind Rasi Subramaniam
-			void setAllReactantAndProductTemplates(map <string,TemplateMolecule *> reactants,
-					map <string,TemplateMolecule *> products);
+			void setAllReactantAndProductTemplates(std::map <std::string,TemplateMolecule *> reactants,
+					std::map <std::string,TemplateMolecule *> products);
 
 			int getNumOfReactants() const { return n_reactants; };
 
-			string getName() const { return name; };
+			std::string getName() const { return name; };
 			int getFireCounter() const { return fireCounter; };
 			double getBaseRate() const { return baseRate; };
 			int getRxnType() const { return reactionType; };
 
 			MoleculeType *getMoleculeTypeOfReactantTemplate(int pos) const;
-			void setBaseRate(double newBaseRate,string newBaseRateName);
+			void setBaseRate(double newBaseRate,std::string newBaseRateName);
 			void resetBaseRateFromSystemParamter();
 
 			void setTraversalLimit(int limit) { this->traversalLimit = limit; };
@@ -1218,7 +1217,7 @@ namespace NFcore
 			void fire(double random_A_number);
 			// AS2023 - additional call sig to use with reaction firing tracking. The call
 			// will now return a log the event
-			string fire(double random_A_number, bool track);
+			std::string fire(double random_A_number, bool track);
 
 			//For DOR reactions
 			virtual void notifyRateFactorChange(Molecule * m, int reactantIndex, int rxnListIndex) = 0;
@@ -1263,8 +1262,8 @@ namespace NFcore
 
 
 			// _NETGEN_
-			void set_match( vector <MappingSet *> & match_set );
-			void apply( vector <Molecule *> & product_molecules );
+			void set_match( std::vector <MappingSet *> & match_set );
+			void apply( std::vector <Molecule *> & product_molecules );
 			bool tagged;
 
 
@@ -1291,7 +1290,7 @@ namespace NFcore
 
 			/* if this reaction is tagged, it outputs a message everytime it is fired */
 			
-			string name;
+			std::string name;
 			int reactionType;
 			unsigned int n_reactants;
 			unsigned int n_mappingsets;
@@ -1299,7 +1298,7 @@ namespace NFcore
 			System * system;
 
 			double baseRate;
-			string baseRateParameterName;
+			std::string baseRateParameterName;
 			double a;
 			unsigned int fireCounter;
 
@@ -1308,13 +1307,13 @@ namespace NFcore
 			/* Used for scanning all reactants and products to infer connectivity
 			 * Arvind Rasi Subramaniam
 			 */
-			vector <TemplateMolecule *> allReactantTemplates;
-			vector <TemplateMolecule *> allProductTemplates;
-			/* Maintain a list of connected reactions whose reactant numbers
+			std::vector <TemplateMolecule *> allReactantTemplates;
+			std::vector <TemplateMolecule *> allProductTemplates;
+			/* Maintain a std::list of connected reactions whose reactant numbers
 			 * might change upon firing this reaction.
 			 * Arvind Rasi Subramaniam
 			 */
-			vector <ReactionClass *> connectedReactions;
+			std::vector <ReactionClass *> connectedReactions;
 
 			TemplateMolecule **reactantTemplates;
 			TransformationSet * transformationSet;
@@ -1323,18 +1322,18 @@ namespace NFcore
 			bool onTheFlyObservables;
 			bool isDimerStyle;
 
-			list <Molecule *> products;
-			list <Molecule *>::iterator molIter;
+			std::list <Molecule *> products;
+			std::list <Molecule *>::iterator molIter;
 
 			// remember the molecule type of each product molecule a with typeII dependencies
-			list <MoleculeType *> typeII_products;
-			list <MoleculeType *>::iterator typeII_iter;
+			std::list <MoleculeType *> typeII_products;
+			std::list <MoleculeType *>::iterator typeII_iter;
 
 			//Used by the reaction class to make sure that it only updates
 			//each complex once (for observables, and matchOnce reactants)
-			vector <int> updatedComplexes;
-			vector <Complex*> productComplexes;  // Justin 24Jun12
-			vector <Complex*>::iterator complexIter; // Justin 24Jun12
+			std::vector <int> updatedComplexes;
+			std::vector <Complex*> productComplexes;  // Justin 24Jun12
+			std::vector <Complex*>::iterator complexIter; // Justin 24Jun12
 
 
 			/* flag to identify if the macroscopic vs. microscopic rate is to
@@ -1350,10 +1349,10 @@ namespace NFcore
 			 */
 			int *identicalPopCountCorrection;
 
-			/*JJT: vector for storing multiple mapping sets, to address a case involing molecules with symmetric components
-			* that could lead to molecules mapping to reactions more than once
+			/*JJT: std::vector for storing multiple std::mapping sets, to address a case involing molecules with symmetric components
+			* that could lead to molecules std::mapping to reactions more than once
 			*/
-			vector<MappingSet*> symmetricMappingSet;
+			std::vector<MappingSet*> symmetricMappingSet;
 			bool comparisonResult;
 			/* whether to use reaction connectivity for updating molecule
 			 * membership
@@ -1407,7 +1406,7 @@ namespace NFcore
 
 
 			void printDegreeDistribution();
-			void getDegreeDistribution(vector <int> &degreeDist);
+			void getDegreeDistribution(std::vector <int> &degreeDist);
 			void printDetails();
 			void printDetailsLong();
 
@@ -1418,15 +1417,15 @@ namespace NFcore
 			double getZpos() { return 0; };
 
 			// get canonical label
-			string getCanonicalLabel ( );
+			std::string getCanonicalLabel ( );
 			// check if this is canonical
 			bool isCanonical ( ) const { return is_canonical; };
 			// unset canonical flag
 			void unsetCanonical ( ) { is_canonical = false; };
 
 			//This is public so that anybody can access the molecules quickly
-			list <Molecule *> complexMembers;
-			list <Molecule *>::iterator molIter;
+			std::list <Molecule *> complexMembers;
+			std::list <Molecule *>::iterator molIter;
 
 
 
@@ -1438,7 +1437,7 @@ namespace NFcore
 			int ID_complex;
 
 			bool    is_canonical;
-			string  canonical_label;
+			std::string  canonical_label;
 
 		private:
 
@@ -1458,7 +1457,7 @@ namespace NFcore
 	        // get methods
 	        Molecule *  getMolecule ( ) const { return molecule; };
 	        int         getComponent ( ) const { return component; };
-	        string      getLabel ( ) const { return label; };
+	        std::string      getLabel ( ) const { return label; };
 	        int         getIndex ( ) const { return index; };
 
 	        // set methods
@@ -1481,12 +1480,12 @@ namespace NFcore
 
 	        Molecule *  molecule;
 	        int         component;
-	        string      label;
+	        std::string      label;
 	        int         index;
 	};
 
-	typedef  pair < Molecule *, int >  node_t;
-	typedef  pair < node_t, Node * >   node_index_t;
+	typedef  std::pair < Molecule *, int >  node_t;
+	typedef  std::pair < node_t, Node * >   node_index_t;
 
 }
 

@@ -6,6 +6,8 @@ SET(CMAKE_CXX_STANDARD 14)
 
 SET(BUILD_PYTHON ON CACHE BOOL "Build SWIG generated Python bindings")
 
+SET(BUILD_DEV ON CACHE BOOL "Build copy of NFsim exe in dev dir for prototyping and testing purposes.")
+
 SET(CMAKE_BUILD_TYPE Release)
 
 SET(SUB_DIRS
@@ -67,11 +69,17 @@ ADD_EXECUTABLE(
     NFsim
     ${SRC_FILES}
 )
-SET_TARGET_PROPERTIES(
-    NFsim
-    PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/dev
-)
+IF (${BUILD_DEV})
+    ADD_EXECUTABLE(
+        NFsimDeV
+        ${SRC_FILES}
+    )
+    SET_TARGET_PROPERTIES(
+        NFsimDeV
+        PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/dev
+    )
+ENDIF (${BUILD_DEV})
 
 IF (${BUILD_PYTHON})
     FIND_PACKAGE(SWIG REQUIRED)
