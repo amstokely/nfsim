@@ -180,33 +180,32 @@
 #include <time.h>
 #include <limits>
 
-using namespace std;
 
 
 //! Outputs an Ascii NFsim logo.
 /*!
   @author Michael Sneddon
 */
-void printLogo(int indent, string version);
+void printLogo(int indent, std::string version);
 
 
 //! Outputs a friendly help message.
 /*!
   @author Michael Sneddon
 */
-void printHelp(string version);
+void printHelp(std::string version);
 
 //! Executes an RNF script from the command line arguments.
 /*!
   @author Michael Sneddon
 */
-bool runRNFscript(map<string,string> argMap, bool verbose);
+bool runRNFscript(std::map<std::string,std::string> argMap, bool verbose);
 
 //! Initializes a System object from the arguments
 /*!
   @author Michael Sneddon
 */
-System *initSystemFromFlags(map<string,string> argMap, bool verbose);
+System *initSystemFromFlags(std::map<std::string,std::string> argMap, bool verbose);
 
 
 
@@ -221,7 +220,7 @@ int main(int argc, char *argv[])
 	// turned off for the general release code.
 	//if (!schedulerInterpreter(&argc, &argv)) return 0;
 
-	string versionNumber = "1.14.1";
+	std::string versionNumber = "1.14.1";
 	cout<<"starting NFsim v"+versionNumber+"..."<<endl<<endl;
 	clock_t start,finish;
 	double time;
@@ -232,7 +231,7 @@ int main(int argc, char *argv[])
     // Begin Execution
 	bool parsed = false;
 	bool verbose = false;
-	map<string,string> argMap;
+	std::map<std::string,std::string> argMap;
 	if(NFinput::parseArguments(argc, const_cast<const char**>(argv), argMap))
 	{
 		//First, find the arguments that we might use in any situation
@@ -290,7 +289,7 @@ int main(int argc, char *argv[])
 		//Handle the case of running a predefined test
 		else if (argMap.find("test")!=argMap.end())
 		{
-			string test = argMap.find("test")->second;
+			std::string test = argMap.find("test")->second;
 			bool foundATest = false;
 			if(!test.empty())
 			{
@@ -350,10 +349,10 @@ int main(int argc, char *argv[])
 
 
 
-bool runRNFscript(map<string,string> argMap, bool verbose)
+bool runRNFscript(std::map<std::string,std::string> argMap, bool verbose)
 {
 	//Step 1: open the file and initialize the argMap
-	vector<string> commands;
+	std::vector<std::string> commands;
 	if(!NFinput::readRNFfile(argMap, commands, verbose)) {
 		cout<<"Error when running the RNF script."<<endl;
 		return false;
@@ -383,7 +382,7 @@ System *initSystemFromFlags(std::map<std::string,std::string> argMap,
 	//Find the xml file that defines the system
 	if (argMap.find("xml")!=argMap.end())
 	{
-		string filename = argMap.find("xml")->second;
+		std::string filename = argMap.find("xml")->second;
 		if(!filename.empty())
 		{
 			//Create the system from the XML file
@@ -488,7 +487,7 @@ System *initSystemFromFlags(std::map<std::string,std::string> argMap,
 
 				// tag any reactions that were tagged
 				if (argMap.find("rtag")!=argMap.end()) {
-					vector <int> sequence;
+					std::vector <int> sequence;
 					NFinput::parseAsCommaSeparatedSequence(argMap,"rtag",sequence);
 
 					if(verbose) {
@@ -503,7 +502,7 @@ System *initSystemFromFlags(std::map<std::string,std::string> argMap,
 
 				//Register the output file location, if given
 				if (argMap.find("o")!=argMap.end()) {
-					string outputFileName = argMap.find("o")->second;
+					std::string outputFileName = argMap.find("o")->second;
 					s->registerOutputFileLocation(outputFileName);
 					s->outputAllObservableNames();
 					if (argMap.find("printmoltypes")!=argMap.end()) {
@@ -543,7 +542,7 @@ System *initSystemFromFlags(std::map<std::string,std::string> argMap,
 				}
 
 				if (argMap.find("rxnlog") != argMap.end()) {
-					string rxnLogFileName = argMap.find("rxnlog")->second;
+					std::string rxnLogFileName = argMap.find("rxnlog")->second;
 					// AS2023 - register file location 
 					s->registerReactionFileLocation(rxnLogFileName);
 					if (argMap.find("logbuffer") != argMap.end()) {
@@ -659,7 +658,7 @@ bool runFromArgs(System *s, std::map<std::string,std::string> argMap,
 
 	// save the final list of species, if requested...
 	if (argMap.find("ss")!=argMap.end()) {
-		string filename = argMap.find("ss")->second;
+		std::string filename = argMap.find("ss")->second;
 		if(!filename.empty())  s->saveSpecies(filename);
 		else   s->saveSpecies();
 	}
@@ -679,9 +678,9 @@ bool runFromArgs(System *s, std::map<std::string,std::string> argMap,
 
 
 
-void printLogo(int indent, string version)
+void printLogo(int indent, std::string version)
 {
-	string s;
+	std::string s;
 	for(int i=0; i<indent; i++) s.append(" ");
 
 	int space = 9-version.length();
@@ -689,7 +688,7 @@ void printLogo(int indent, string version)
 		cout<<"\n\nCome on!!! you don't even know how to print out the NFsim logo!"<<endl;
 		cout<<"What kind of code developer are you!!\n\n"<<endl;
 	}
-	string s2;
+	std::string s2;
 	for(int i=0; i<space; i++) s2.append(" ");
 	cout<<s<<"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"<<endl;
 	cout<<s<<"%                                   %"<<endl;
@@ -704,7 +703,7 @@ void printLogo(int indent, string version)
 
 
 
-void printHelp(string version)
+void printHelp(std::string version)
 {
 	cout<<"To run NFsim at the command prompt, use flags to specify what you want"<<endl;
 	cout<<"to do.  Flags are given in this format in any order: \"-flagName\"."<<endl;

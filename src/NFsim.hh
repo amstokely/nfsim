@@ -54,22 +54,27 @@
 /*!
   @author Michael Sneddon
 */
-bool runFromArgs(System *s, std::map<std::string,std::string> argMap,
-				 bool verbose);
+bool runFromArgs(
+		System *s,
+		std::map<
+				std::string,
+				std::string
+		> argMap,
+		bool verbose
+);
 
 
 //! Initialize a system from command line flags
 /*!
   @author Michael Sneddon
 */
-System *initSystemFromFlags(std::map<std::string,std::string> argMap,
-							bool verbose);
-
-
-
-
-
-
+System *initSystemFromFlags(
+		std::map<
+				std::string,
+				std::string
+		> argMap,
+		bool verbose
+);
 
 
 #endif /*NFSIM_HH_*/
